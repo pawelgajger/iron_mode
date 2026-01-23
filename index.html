@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRON MODE - All-in-One</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #ff4500;
+            --primary-grad: linear-gradient(135deg, #ff4500, #ff0000);
+            --bg: #0a0a0a;
+            --card: #161616;
+            --text: #ffffff;
+            --border: #2a2a2a;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.4;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 480px;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 22px;
+            letter-spacing: 1px;
+            color: var(--primary);
+        }
+
+        .weekly-badge {
+            background: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .main-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 10px;
+            color: #888;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            background: #222;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .btn-main {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary-grad);
+            border: none;
+            color: #fff;
+            font-weight: 900;
+            border-radius: 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 69, 0, 0.3);
+            transition: transform 0.1s;
+        }
+
+        .btn-main:active {
+            transform: scale(0.98);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .res-card {
+            background: var(--card);
+            padding: 15px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .val {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .val-sm {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 5px 0;
+            color: #ddd;
+        }
+
+        #rank-display {
+            text-align: center;
+            font-size: 12px;
+            color: #ffaa00;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #222;
+        }
+
+        .history-item:last-child {
+            border: 0;
+        }
+
+        .del-btn {
+            background: #222;
+            border: none;
+            color: #555;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        h3 {
+            font-size: 14px;
+            margin-top: 0;
+            color: #888;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app">
+        <header>
+            <h1>🔥 IRON MODE</h1>
+            <div id="weekly-status" class="weekly-badge">0 / 7000 kcal</div>
+        </header>
+
+        <div id="rank-display">Ranga: IRON NOOB 🛡️</div>
+
+        <section class="panel main-card">
+            <div class="input-grid">
+                <div class="field">
+                    <label>⚖️ Twoja Waga (kg)</label>
+                    <input id="weight" type="number" step="0.1" placeholder="np. 105">
+                </div>
+                <div class="field">
+                    <label>⏱️ Czas (min)</label>
+                    <input id="time" type="number" placeholder="60">
+                </div>
+                <div class="field">
+                    <label>🚶 Prędkość (km/h)</label>
+                    <input id="speed" type="number" step="0.1" value="4.5">
+                </div>
+                <div class="field">
+                    <label>⛰️ Nachylenie (%)</label>
+                    <input id="incline" type="number" value="15">
+                </div>
+            </div>
+
+            <label>❤️ Średnie tętno (HR)</label>
+            <input id="hr" type="number" placeholder="np. 125">
+
+            <button class="btn-main" onclick="calculate()">DODAJ TRENING 🔥</button>
+        </section>
+
+        <section class="results-grid">
+            <div class="res-card">
+                <small>SPALONE</small>
+                <div id="calories" class="val">0</div>
+                <small>kcal</small>
+            </div>
+            <div class="res-card">
+                <small>STREFA</small>
+                <div id="zone" class="val-sm">—</div>
+                <small id="epoc">Afterburn: +0</small>
+            </div>
+        </section>
+
+        <section class="chart-section main-card">
+            <h3>📈 Ostatnie 7 dni</h3>
+            <canvas id="chart"></canvas>
+        </section>
+
+        <section class="history-section main-card">
+            <h3>📜 Historia aktywności</h3>
+            <div id="history-list"></div>
+        </section>
+    </div>
+
+    <script>
+        // --- KONFIGURACJA I STORAGE ---
+        const STORAGE_KEY = 'ironHistory';
+        const WEIGHT_KEY = 'ironWeight';
+        let myChart;
+
+        window.onload = initApp;
+
+        function initApp() {
+            document.getElementById('weight').value = localStorage.getItem(WEIGHT_KEY) || 110;
+            updateUI();
+        }
+
+        function getHistory() {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        }
+
+        // --- LOGIKA OBLICZEŃ ---
+        function calculate() {
+            const w = +document.getElementById('weight').value;
+            const t = +document.getElementById('time').value;
+            const s = +document.getElementById('speed').value;
+            const i = +document.getElementById('incline').value;
+            const hr = +document.getElementById('hr').value;
+
+            if (!w || !t) return alert("Wypełnij wagę i czas!");
+
+            localStorage.setItem(WEIGHT_KEY, w);
+
+            // Formuła MET dla nachylenia (uproszczona)
+            const MET = s + (i * 0.27);
+            let kcal = ((MET * 3.5 * w) / 200) * t;
+
+            // Mnożniki intensywności HR
+            if (hr >= 145) kcal *= 1.15;
+            else if (hr >= 120) kcal *= 1.05;
+
+            const epoc = kcal * (hr > 130 ? 0.1 : 0.05);
+            const total = Math.round(kcal + epoc);
+
+            // Zapis do historii
+            const history = getHistory();
+            history.unshift({ id: Date.now(), calories: total, date: new Date().toISOString(), hr: hr });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+
+            // Animacja wyniku
+            animateValue("calories", 0, total, 1000);
+            document.getElementById('epoc').innerText = `Afterburn: +${Math.round(epoc)} kcal`;
+            document.getElementById('zone').innerText = getHRZone(hr);
+
+            updateUI();
+        }
+
+        function getHRZone(hr) {
+            if (hr < 100) return 'Regeneracja 🧘';
+            if (hr < 125) return 'Fat Burn 🔥';
+            if (hr < 145) return 'Cardio 💪';
+            return 'Extreme ⚠️';
+        }
+
+        // --- UI UPDATES ---
+        function updateUI() {
+            renderHistory();
+            updateWeeklyStatus();
+            updateChart();
+        }
+
+        function updateWeeklyStatus() {
+            const history = getHistory();
+            const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+            const total = history
+                .filter(e => new Date(e.date).getTime() > weekAgo)
+                .reduce((sum, e) => sum + e.calories, 0);
+
+            document.getElementById('weekly-status').innerText = `${total} / 7000 kcal`;
+
+            // System Rang
+            let rank = "IRON NOOB 🛡️";
+            if (total > 1500) rank = "IRON WARRIOR ⚔️";
+            if (total > 4000) rank = "IRON BEAST 👹";
+            if (total >= 7000) rank = "IRON GOD ⚡";
+            document.getElementById('rank-display').innerText = `Ranga: ${rank}`;
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            const history = getHistory().slice(0, 5);
+
+            list.innerHTML = history.map(e => `
+            <div class="history-item">
+                <div>
+                    <div style="font-size: 13px; font-weight: bold;">${new Date(e.date).toLocaleDateString()}</div>
+                    <div style="font-size: 11px; color: #555;">${getHRZone(e.hr)}</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="color: var(--primary); font-weight: bold;">${e.calories} kcal</span>
+                    <button class="del-btn" onclick="deleteEntry(${e.id})">✕</button>
+                </div>
+            </div>
+        `).join('');
+        }
+
+        function deleteEntry(id) {
+            const history = getHistory().filter(e => e.id !== id);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+            updateUI();
+        }
+
+        function updateChart() {
+            const history = getHistory();
+            const days = ['Nie', 'Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob'];
+            const labels = [];
+            const data = [];
+
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                labels.push(days[d.getDay()]);
+
+                const dayTotal = history
+                    .filter(e => new Date(e.date).toDateString() === d.toDateString())
+                    .reduce((sum, e) => sum + e.calories, 0);
+                data.push(dayTotal);
+            }
+
+            const ctx = document.getElementById('chart').getContext('2d');
+            if (myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'kcal',
+                        data: data,
+                        backgroundColor: '#ff4500',
+                        borderRadius: 6,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#222', drawBorder: false }, ticks: { color: '#555' } },
+                        x: { grid: { display: false }, ticks: { color: '#888' } }
+                    }
+                }
+            });
+        }
+
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+    </script>
+
+</body>
+
+</html>
